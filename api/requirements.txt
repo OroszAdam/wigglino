@@ -1,0 +1,13 @@
+# torch is installed separately (CPU or CUDA wheel index), see Dockerfile / README.
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
+python-multipart>=0.0.9
+httpx>=0.27,<1
+pillow>=10
+numpy<2
+# Depth Anything 3 runtime (its own requirement list is much heavier than inference needs)
+einops
+addict
+omegaconf
+safetensors
+huggingface_hub
