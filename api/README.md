@@ -11,3 +11,6 @@ short_description: Turn one photo into a 3D wigglegram (Depth Anything 3)
 ---
 
 API for the wigglegram web app. Source: the `api/` folder of the GitHub repo, synced here by CI.
+
+To start locally, run:
+`DEVICE=cpu PYTHONPATH=src .venv/bin/uvicorn wigglegram.main:app --port 7860 --reload`
