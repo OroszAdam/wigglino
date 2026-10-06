@@ -1,4 +1,4 @@
-# Runs on Hugging Face Spaces (CPU, port 7860, uid 1000) and any other container host.
+# CPU image (x86_64 or arm64), port 7860, runs as uid 1000.
 # GPU host: build with --build-arg TORCH_INDEX=https://download.pytorch.org/whl/cu128
 FROM python:3.12-slim
 
@@ -10,7 +10,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-RUN useradd --create-home --uid 1000 user
+# The HF cache dir exists in the image so a volume mounted there inherits the user's ownership.
+RUN useradd --create-home --uid 1000 user \
+ && mkdir -p /home/user/.cache/huggingface \
+ && chown -R user:user /home/user/.cache
 WORKDIR /app
 
 COPY requirements.txt requirements-da3.txt ./
