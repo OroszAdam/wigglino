@@ -24,3 +24,22 @@ jobs:
       - run: pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
       - run: pip install -r requirements-dev.txt && pip install --no-deps -r requirements-da3.txt
       - run: python -m pytest -q
+
+  # Mirrors api/ to the Hugging Face Space, which rebuilds the Docker image.
+  # Needs secret HF_TOKEN (write access) and variable HF_SPACE ("user/space-name").
+  deploy:
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.HF_SPACE != ''
+    runs-on: ubuntu-latest
+    concurrency: hf-space
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Push api/ to the Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+        run: |
+          git subtree split --prefix api -b hf-space
+          git push --force "https://${HF_SPACE%%/*}:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}" hf-space:main
